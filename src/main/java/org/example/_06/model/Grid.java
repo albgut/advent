@@ -1,6 +1,7 @@
 package org.example._06.model;
 
 import org.example.utils.Coordinate;
+import org.example.utils.GridGeneric;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public class Grid {
+public class Grid implements GridGeneric {
 
     public static final String OBSTACLE_STRING = "#";
     private static final String GUARD_NORTH = "^";
