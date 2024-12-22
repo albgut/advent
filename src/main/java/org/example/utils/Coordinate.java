@@ -1,6 +1,17 @@
 package org.example.utils;
 
+import java.util.List;
+
 public record Coordinate(int i, int j) {
+    public List<Coordinate> getNeighbour() {
+        return List.of(
+                new Coordinate(i - 1, j),
+                new Coordinate(i, j + 1),
+                new Coordinate(i + 1, j),
+                new Coordinate(i, j - 1)
+        );
+    }
+
     @Override
     public String toString() {
         return i + "," + j;

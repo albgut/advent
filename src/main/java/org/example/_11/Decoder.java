@@ -1,6 +1,8 @@
 package org.example._11;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import static org.example.utils.InputReader.getStringFromFilePath;
@@ -8,49 +10,53 @@ import static org.example.utils.InputReader.getStringFromFilePath;
 public class Decoder {
 
     public static long decode(String inputFileName) {
-        List<String> lines = Arrays.stream(getStringFromFilePath(inputFileName).split("\r\n")).toList();
-        return lines.stream().map(Decoder::computeLine).reduce(Long::sum).orElse(0L);
+        List<Long> currentInput = Arrays.stream(getStringFromFilePath(inputFileName).split(" ")).map(Long::parseLong).toList();
+        for (int i = 0; i < 25; i++) {
+            currentInput = currentInput.stream()
+                    .map(Decoder::blink)
+                    .flatMap(Collection::stream)
+                    .toList();
+            System.out.println("parcours n°" + i + " : " + currentInput.size());
+
+        }
+        return currentInput.size();
+    }
+
+    private static List<Long> blink(Long stoneValue) {
+        if (stoneValue == 0) {
+            return List.of(1L);
+        } else if (String.valueOf(stoneValue).length() % 2 == 0) {
+            String currentLong = String.valueOf(stoneValue);
+            long leftSide = Long.parseLong(currentLong.substring(0, currentLong.length() / 2));
+            long rightSide = Long.parseLong(currentLong.substring(currentLong.length() / 2));
+            return List.of(leftSide, rightSide);
+        } else {
+            return List.of(2024 * stoneValue);
+        }
     }
 
     public static long decodeSecondPart(String inputFileName) {
-        List<String> lines = Arrays.stream(getStringFromFilePath(inputFileName).split("\r\n")).toList();
-        return lines.stream().map(Decoder::computeLineThreeOperators).reduce(Long::sum).orElse(0L);
-    }
-
-    private static long computeLine(String line) {
-        String[] rawInputSections = line.split(": ");
-        long result = Long.parseLong(rawInputSections[0]);
-        List<Long> numbersToCompute = Arrays.stream(rawInputSections[1].split(" "))
-                .map(Long::parseLong).toList();
-        return isComputable(result, numbersToCompute, 0) ? result : 0;
-    }
-
-    private static long computeLineThreeOperators(String line) {
-        String[] rawInputSections = line.split(": ");
-        long result = Long.parseLong(rawInputSections[0]);
-        List<Long> numbersToCompute = Arrays.stream(rawInputSections[1].split(" "))
-                .map(Long::parseLong).toList();
-        return isComputableThreeOperators(result, numbersToCompute, 0) ? result : 0;
-    }
-
-    private static boolean isComputableThreeOperators(long result, List<Long> numbersToCompute, long currentValue) {
-        if(numbersToCompute.isEmpty()){
-            return result == currentValue;
+        List<Long> currentInput = Arrays.stream(getStringFromFilePath(inputFileName).split(" ")).map(Long::parseLong).toList();
+        ArrayList<Long> mutableList = new ArrayList<>(currentInput);
+        for (int i = 0; i < 75; i++) {
+            for (int j = 0; j < mutableList.size(); j++) {
+                long current = mutableList.get(j);
+                if (current == 0) {
+                    mutableList.set(j, 1L);
+                } else if (String.valueOf(current).length() % 2 == 0) {
+                    String currentLong = String.valueOf(current);
+                    long leftSide = Long.parseLong(currentLong.substring(0, currentLong.length() / 2));
+                    long rightSide = Long.parseLong(currentLong.substring(currentLong.length() / 2));
+                    mutableList.set(j, rightSide);
+                    mutableList.add(j, leftSide);
+                } else {
+                    mutableList.set(j, current * 2024);
+                }
+            }
+            System.out.println("parcours n°" + i + " : " + mutableList.size());
         }
-        return isComputableThreeOperators(result, numbersToCompute.subList(1, numbersToCompute.size()), currentValue + numbersToCompute.get(0)) ||
-                isComputableThreeOperators(result, numbersToCompute.subList(1, numbersToCompute.size()), currentValue * numbersToCompute.get(0)) ||
-                isComputableThreeOperators(result, numbersToCompute.subList(1, numbersToCompute.size()), concatLong(currentValue, numbersToCompute.get(0)));
-    }
-
-    private static long concatLong(long concatNumber1, long concatNumber2) {
-        return Long.parseLong(String.valueOf(concatNumber1) + concatNumber2);
-    }
-
-    private static boolean isComputable(long result, List<Long> numbersToCompute, long currentValue) {
-        if(numbersToCompute.isEmpty()){
-            return result == currentValue;
-        }
-        return isComputable(result, numbersToCompute.subList(1, numbersToCompute.size()), currentValue + numbersToCompute.get(0)) ||
-                isComputable(result, numbersToCompute.subList(1, numbersToCompute.size()), currentValue * numbersToCompute.get(0));
+//        System.out.println(currentInput.stream().map(String::valueOf)
+//                .reduce((s, s2) -> String.join(" ", s, s2)));
+        return currentInput.size();
     }
 }
