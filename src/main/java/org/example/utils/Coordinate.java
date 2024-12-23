@@ -12,6 +12,21 @@ public record Coordinate(int i, int j) {
         );
     }
 
+    public List<Coordinate> getUpperNeighbour() {
+        return List.of(
+                new Coordinate(i - 1, j),
+                new Coordinate(i, j - 1)
+        );
+    }
+
+    public Coordinate getRight() {
+        return new Coordinate(i, j + 1);
+    }
+
+    public Coordinate getUp() {
+        return new Coordinate(i - 1, j);
+    }
+
     @Override
     public String toString() {
         return i + "," + j;
